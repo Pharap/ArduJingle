@@ -51,7 +51,7 @@ void beepboop() {
     analogWrite(9,brightness);
     delay(100);
     
-    tone(PIN_SPEAKER_1, 698, 100);
+    tone(PIN_SPEAKER_1, 880, 100);
     arduboy.setCursor(49,28);
     arduboy.print("R");
     arduboy.write(219);
