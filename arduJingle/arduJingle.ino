@@ -5,6 +5,7 @@ Arduboy2 arduboy;
 void setup() {
 
   arduboy.boot();
+  arduboy.flashlight();
   pinMode(5, OUTPUT);
   pinMode(13, OUTPUT);
   digitalWrite(5, LOW);
@@ -32,87 +33,64 @@ void loop() {
   arduboy.display();
 }
 
+PROGMEM const char logo[] = "ARDUBOY";
 
-void beepboop() {
+PROGMEM const uint16_t logoSounds[] =
+{
+	784, 880, 587, 698, 988, 698, 988, 784
+};
 
-  
-    arduboy.setCursor(43,28);
-    arduboy.write(219);
+const uint8_t boxCharacter = 219;
+const uint8_t logoLength = 7;
+const uint8_t charWidth = 5;
+const uint8_t charHeight = 8;
+const uint8_t logoX = 43;
+const uint8_t logoY = 28;
+const uint8_t logoEndX = logoX + (logoLength * (charWidth + 1));
+const uint8_t logoEndY = logoY;
+
+void beepboop()
+{  
+    arduboy.setCursor(logoX, logoY);
+    arduboy.write(boxCharacter);
+    
     arduboy.display();
     delay(100);
 
-    
-    
-    tone(PIN_SPEAKER_1, 784, 100);
-    arduboy.setCursor(43,28);
-    arduboy.print("A");
-    arduboy.write(219);
-    arduboy.display();
-    analogWrite(9,brightness);
-    delay(100);
-    
-    tone(PIN_SPEAKER_1, 880, 100);
-    arduboy.setCursor(49,28);
-    arduboy.print("R");
-    arduboy.write(219);
-    arduboy.display();
-    analogWrite(10,brightness);
-    delay(100);
-    
-    tone(PIN_SPEAKER_1, 587, 100);
-    arduboy.setCursor(55,28);
-    arduboy.print("D");
-    arduboy.write(219);
-    arduboy.display();
-    digitalWrite(9,1);
-    delay(100);
-    
-    tone(PIN_SPEAKER_1, 698, 100);
-    arduboy.setCursor(61,28);
-    arduboy.print("U");
-    arduboy.write(219);
-    arduboy.display();
-    analogWrite(11,brightness);
-    delay(100);
-    
-    tone(PIN_SPEAKER_1, 988, 100);
-    arduboy.setCursor(67,28);
-    arduboy.print("B");
-    arduboy.write(219);
-    arduboy.display();
-    digitalWrite(10,1);
-    delay(100);
-    
-    tone(PIN_SPEAKER_1, 784, 100);
-    arduboy.setCursor(73,28);
-    arduboy.print("O");
-    arduboy.write(219);
-    arduboy.display();
-    analogWrite(9,brightness);
-    delay(100);
+	for(uint8_t i = 0, x = logoX; i < logoLength; ++i, x += 6)
+	{
+		const uint16_t sound = pgm_read_byte(&(logoSounds[i]));
+		tone(PIN_SPEAKER_1, sound, 100);
+		
+    	arduboy.setCursor(x, logoY);
+    	
+    	const char c = (char)pgm_read_byte(&(logo[i]));
+	    arduboy.print(c);
+	    arduboy.write(boxCharacter);
+	    
+	    arduboy.display();	    
+	    delay(100);
+	}
     
     tone(PIN_SPEAKER_1, 1047, 100);
-    digitalWrite(9,1);
-    digitalWrite(11,1);
-    
-    for(int i=0;i<4;i++){
-      
-      arduboy.setCursor(43,28);
-      arduboy.print("ARDUBOY");
-      arduboy.write(219);
-      arduboy.display();
-      delay(200);
-      
-      arduboy.clear();
-      arduboy.setCursor(43,28);
-      arduboy.print("ARDUBOY");
-      arduboy.display();
-      delay(200);
-      
-    }
 
-
+	{
+	    bool toggle = false;
+	    for(uint8_t i = 0; i < 8; ++i)
+	    {
+	    	toggle = !toggle;
+	    	if(toggle)
+	    	{
+				arduboy.setCursor(logoEndX, logoEndY);
+				arduboy.write(boxCharacter);	 
+	    	}
+	    	else
+	    	{
+				arduboy.fillRect(logoEndX, logoEndY, charWidth, charHeight, BLACK);   		
+	    	}
+	    	
+			arduboy.display();
+			delay(200); 
+	    }
+	}
 }
-
-
-
